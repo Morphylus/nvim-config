@@ -14,6 +14,6 @@ return {
 	vim.opt.termguicolors = true
     require("nvim-tree").setup {}
 
-    vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true})
+    vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true, desc = "Toggle File Explorer"})
   end,
 }
