@@ -102,8 +102,9 @@ return { {
                         { buffer = event.buf, desc = "Hover over selection" })
                     vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>',
                         { buffer = event.buf, desc = "Go to definition" })
-                    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>',
-                        { buffer = event.buf, desc = "Go to decleration" })
+                    -- Go to definition in split window: Split window, move to left and open definition
+                    vim.keymap.set('n', 'gD', '<cmd>vsplit | wincmd L | lua vim.lsp.buf.declaration()<cr>',
+                        { noremap = true, silent = true, desc = "Go to definition in split window" })
                     vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>',
                         { buffer = event.buf, desc = "Go to implementation" })
                     vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>',
