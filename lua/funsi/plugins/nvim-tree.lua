@@ -12,7 +12,11 @@ return {
 
 	-- Enable 24-bit color
 	vim.opt.termguicolors = true
-    require("nvim-tree").setup {}
+    require("nvim-tree").setup({
+        filters = {
+                dotfiles = true,
+        }
+        })
 
     vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true, desc = "Toggle File Explorer"})
   end,
