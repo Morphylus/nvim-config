@@ -122,8 +122,19 @@ return { {
                 end
             })
 
+            require('lspconfig').eslint.setup({
+                settings = {
+                    eslint = {
+                        enable = true,
+                        packageManager = "yarn",
+                        configFiles = ".eslint.config.mjs",
+                        validate = "on"
+                    }
+                }
+            })
+
             require('mason-lspconfig').setup({
-                ensure_installed = {},
+                ensure_installed = { "eslint" },
                 handlers = { -- this first function is the "default handler"
                     -- it applies to every language server without a "custom handler"
                     function(server_name)
