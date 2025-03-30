@@ -2,6 +2,7 @@
 vim.wo.relativenumber = true
 vim.opt.cursorline = true
 vim.opt.cursorlineopt = "number"
+vim.opt.showmode = false
 
 -- 4 space indenting
 vim.opt.tabstop = 4
