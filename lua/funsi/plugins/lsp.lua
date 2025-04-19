@@ -98,8 +98,8 @@ return { {
                         buffer_autoformat(event.buf)
                     end
 
-                    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>',
-                        { buffer = event.buf, desc = "Hover over selection" })
+                    -- vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>',
+                    --     { buffer = event.buf, desc = "Hover over selection" })
                     vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>',
                         { buffer = event.buf, desc = "Go to definition" })
                     -- Go to definition in split window: Split window, move to left and open definition
