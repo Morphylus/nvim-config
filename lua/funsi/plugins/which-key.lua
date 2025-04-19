@@ -3,7 +3,8 @@ return {
     event = "VeryLazy",
     opts = {
         spec = {
-            { "<leader>x", group = "Trouble" }
+            { "<leader>x", group = "Trouble" },
+            { "<leader>f", group = "Telescope" }
         }
     },
     keys = {
@@ -14,6 +15,7 @@ return {
             end,
             desc = "Buffer Local Keymaps (which-key)",
         },
+        { "<leader>f", group = "+Telescope" },
         { "<leader>x", group = "+Trouble" }
     },
 }

@@ -15,10 +15,10 @@ vim.opt.smartindent = true
 vim.opt.wrap = false
 
 -- Some undo related stuff
--- vim.opt.swapfile = false
--- vim.opt.backup = false
--- vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
--- vim.opt.undofile = true
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
+vim.opt.undofile = true
 
 -- Search highlighting behavior
 vim.opt.hlsearch = false
