@@ -1,7 +1,7 @@
 -- Show relative line numbers
 vim.wo.relativenumber = true
-vim.opt.cursorline = true
-vim.opt.cursorlineopt = "number"
+vim.o.cursorline = true
+vim.o.cursorlineopt = "both"
 vim.opt.showmode = false
 
 -- 4 space indenting
@@ -36,4 +36,4 @@ vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
-vim.cmd("colorscheme onedark_vivid")
+vim.cmd("colorscheme catppuccin-macchiato")
