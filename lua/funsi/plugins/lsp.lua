@@ -113,9 +113,9 @@ return { {
                         { buffer = event.buf, desc = "Show references" })
                     vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>',
                         { buffer = event.buf, desc = "Show signature help" })
-                    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>',
+                    vim.keymap.set('n', 'r', '<cmd>lua vim.lsp.buf.rename()<cr>',
                         { buffer = event.buf, desc = "Rename" })
-                    vim.keymap.set({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>',
+                    vim.keymap.set({ 'n', 'x' }, 'f', '<cmd>lua vim.lsp.buf.format({async = true})<cr>',
                         { buffer = event.buf, desc = "Format selection" })
                     vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>',
                         { buffer = event.buf, desc = "Code action" })
