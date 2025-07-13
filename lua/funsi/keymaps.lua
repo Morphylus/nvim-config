@@ -18,6 +18,9 @@ vim.keymap.set('n', '<leader>fh', builtin.help_tags, {
     desc = 'Telescope help tags'
 })
 
+vim.keymap.set('n', '<leader>w', ':set wrap!<CR>', {
+    noremap = true, silent = true })
+
 -- GPT Models
 -- Both visual and normal mode for each, so you can open with a visual selection or without.
 vim.api.nvim_set_keymap('v', '<leader>a', ':GPTModelsCode<CR>', {

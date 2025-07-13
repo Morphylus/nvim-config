@@ -29,7 +29,17 @@ return { {
                     }),
                     ["<C-k>"] = cmp.mapping.select_prev_item({
                         behavior = cmp.SelectBehavior.Insert
-                    })
+                    }),
+
+                    ['<Tab>'] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.confirm({ select = true })
+                        elseif vim.snippet and vim.snippet.active() then
+                            vim.snippet.jump(1)
+                        else
+                            fallback()
+                        end
+                    end, { 'i', 's' }),
                 }),
                 snippet = {
                     expand = function(args)
@@ -113,7 +123,7 @@ return { {
                         { buffer = event.buf, desc = "Show references" })
                     vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>',
                         { buffer = event.buf, desc = "Show signature help" })
-                    vim.keymap.set('n', 'r', '<cmd>lua vim.lsp.buf.rename()<cr>',
+                    vim.keymap.set('n', 'gR', '<cmd>lua vim.lsp.buf.rename()<cr>',
                         { buffer = event.buf, desc = "Rename" })
                     vim.keymap.set({ 'n', 'x' }, 'f', '<cmd>lua vim.lsp.buf.format({async = true})<cr>',
                         { buffer = event.buf, desc = "Format selection" })
