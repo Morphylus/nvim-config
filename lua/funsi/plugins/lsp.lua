@@ -151,7 +151,20 @@ return { {
                     -- it applies to every language server without a "custom handler"
                     function(server_name)
                         require('lspconfig')[server_name].setup({})
-                    end }
+                    end,
+
+                    lua_ls = function()
+                        require('lspconfig').lua_ls.setup {
+                            settings = {
+                                Lua = {
+                                    diagnostics = {
+                                        globals = { 'vim' },
+                                    },
+                                },
+                            },
+                        }
+                    end
+                }
             })
         end
     } }
