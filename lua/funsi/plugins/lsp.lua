@@ -60,12 +60,11 @@ return { {
             vim.opt.signcolumn = 'yes'
         end,
         config = function()
-            local lsp_defaults = require('lspconfig').util.default_config
-
             -- Add cmp_nvim_lsp capabilities settings to lspconfig
             -- This should be executed before you configure any language server
-            lsp_defaults.capabilities = vim.tbl_deep_extend('force', lsp_defaults.capabilities,
-                require('cmp_nvim_lsp').default_capabilities())
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
+            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
 
             -- Define the autoformat function locally
             local buffer_autoformat = function(bufnr)
@@ -132,7 +131,8 @@ return { {
                 end
             })
 
-            require('lspconfig').eslint.setup({
+            vim.lsp.config('eslint', {
+                capabilities = capabilities,
                 settings = {
                     eslint = {
                         enable = true,
@@ -150,11 +150,15 @@ return { {
                 handlers = { -- this first function is the "default handler"
                     -- it applies to every language server without a "custom handler"
                     function(server_name)
-                        require('lspconfig')[server_name].setup({})
+                        vim.lsp.config(server_name, {
+                            capabilities = capabilities
+                        })
+                        vim.lsp.enable(server_name)
                     end,
 
                     lua_ls = function()
-                        require('lspconfig').lua_ls.setup {
+                        vim.lsp.config('lua_ls', {
+                            capabilities = capabilities,
                             settings = {
                                 Lua = {
                                     diagnostics = {
@@ -162,8 +166,10 @@ return { {
                                     },
                                 },
                             },
-                        }
+                        })
+                        vim.lsp.enable('lua_ls')
                     end
+
                 }
             })
         end
