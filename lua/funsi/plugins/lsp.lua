@@ -173,8 +173,7 @@ return { {
             })
 
             -- sourcekit is NOT managed by mason, set up separately
-            local lspconfig = require('lspconfig')
-            lspconfig["sourcekit"].setup({
+            vim.lsp.config('sourcekit', {
                 capabilities = capabilities,
                 cmd = {
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
@@ -187,5 +186,6 @@ return { {
                         or util.root_pattern("Package.swift")(filename)
                 end,
             })
+            vim.lsp.enable('sourcekit')
         end
     } }
