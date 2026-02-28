@@ -172,13 +172,13 @@ return { {
                 }
             })
 
-            -- sourcekit is NOT managed by mason, set up separately
             vim.lsp.config('sourcekit', {
                 capabilities = capabilities,
                 cmd = {
                     "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
                 },
-                root_dir = function(filename, _)
+                root_dir = function(bufnr)
+                    local filename = vim.api.nvim_buf_get_name(bufnr)
                     local util = require("lspconfig.util")
                     return util.root_pattern("buildServer.json")(filename)
                         or util.root_pattern("*.xcodeproj", "*.xcworkspace")(filename)
