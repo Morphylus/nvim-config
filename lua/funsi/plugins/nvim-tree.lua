@@ -7,9 +7,6 @@ return {
         -- disable netrw
         vim.g.loaded_netrw = 1
         vim.g.loaded_netrwPlugin = 1
-
-        -- Enable 24-bit color
-        vim.opt.termguicolors = true
         require("nvim-tree").setup({
             filters = {
                 dotfiles = false,

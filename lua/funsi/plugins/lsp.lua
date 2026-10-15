@@ -1,8 +1,10 @@
-return { {
-    'williamboman/mason.nvim',
-    lazy = false,
-    opts = {}
-}, -- Autocompletion
+return {
+    {
+        'mason-org/mason.nvim',
+        lazy = false,
+        opts = {}
+    },
+    -- Autocompletion
     {
         'hrsh7th/nvim-cmp',
         event = 'InsertEnter',
@@ -34,7 +36,7 @@ return { {
                     ['<Tab>'] = cmp.mapping(function(fallback)
                         if cmp.visible() then
                             cmp.confirm({ select = true })
-                        elseif vim.snippet and vim.snippet.active() then
+                        elseif vim.snippet.active() then
                             vim.snippet.jump(1)
                         else
                             fallback()
@@ -48,37 +50,71 @@ return { {
                 }
             })
         end
-    }, -- LSP
+    },
+    -- LSP
+    -- Neovim handles LSP natively (vim.lsp.config / vim.lsp.enable). nvim-lspconfig
+    -- only ships the default server configs (cmd, filetypes, root markers) and
+    -- mason-lspconfig enables every server installed through :Mason.
     {
         'neovim/nvim-lspconfig',
         cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
         event = { 'BufReadPre', 'BufNewFile' },
-        dependencies = { { 'hrsh7th/cmp-nvim-lsp' }, { 'williamboman/mason.nvim' }, { 'williamboman/mason-lspconfig.nvim' } },
-        init = function()
-            -- Reserve a space in the gutter
-            -- This will avoid an annoying layout shift in the screen
-            vim.opt.signcolumn = 'yes'
-        end,
+        dependencies = { 'hrsh7th/cmp-nvim-lsp', 'mason-org/mason.nvim', 'mason-org/mason-lspconfig.nvim' },
         config = function()
-            -- Add cmp_nvim_lsp capabilities settings to lspconfig
-            -- This should be executed before you configure any language server
-            local capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+            -- Defaults for every language server
+            vim.lsp.config('*', {
+                capabilities = require('cmp_nvim_lsp').default_capabilities(),
+            })
 
+            vim.lsp.config('eslint', {
+                settings = {
+                    eslint = {
+                        enable = true,
+                        packageManager = "yarn",
+                        configFiles = ".eslint.config.mjs",
+                        validate = "on"
+                    }
+                }
+            })
+
+            vim.lsp.config('lua_ls', {
+                settings = {
+                    Lua = {
+                        diagnostics = {
+                            globals = { 'vim' },
+                        },
+                    },
+                },
+            })
+
+            -- Swift only, C/C++ is handled by clangd
+            vim.lsp.config('sourcekit', {
+                filetypes = { 'swift' },
+                cmd = {
+                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
+                },
+            })
+
+            -- Servers that are not installed through mason
+            vim.lsp.enable({ 'gdscript', 'sourcekit' })
+
+            -- Enables every server installed through mason
+            require('mason-lspconfig').setup({
+                ensure_installed = { "eslint", "clangd" },
+            })
 
             -- Define the autoformat function locally
             local buffer_autoformat = function(bufnr)
-                local group = 'lsp_autoformat'
-                vim.api.nvim_create_augroup(group, {
+                local group = vim.api.nvim_create_augroup('lsp_autoformat', {
                     clear = false
                 })
                 vim.api.nvim_clear_autocmds({
                     group = group,
-                    buffer = bufnr
+                    buf = bufnr
                 })
 
                 vim.api.nvim_create_autocmd('BufWritePre', {
-                    buffer = bufnr,
+                    buf = bufnr,
                     group = group,
                     desc = 'LSP format on save',
                     callback = function()
@@ -96,96 +132,40 @@ return { {
             vim.api.nvim_create_autocmd('LspAttach', {
                 desc = 'LSP actions',
                 callback = function(event)
-                    -- Autoformat on save
-                    local id = vim.tbl_get(event, 'data', 'client_id')
-                    local client = id and vim.lsp.get_client_by_id(id)
+                    local client = vim.lsp.get_client_by_id(event.data.client_id)
                     if client == nil then
                         return
                     end
 
-                    if client.supports_method('textDocument/formatting') then
+                    -- Autoformat on save
+                    if client:supports_method('textDocument/formatting') then
                         buffer_autoformat(event.buf)
                     end
 
-                    -- vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>',
-                    --     { buffer = event.buf, desc = "Hover over selection" })
-                    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>',
-                        { buffer = event.buf, desc = "Go to definition" })
+                    local map = function(mode, lhs, rhs, desc)
+                        vim.keymap.set(mode, lhs, rhs, { buf = event.buf, silent = true, desc = desc })
+                    end
+
+                    map('n', 'gd', vim.lsp.buf.definition, "Go to definition")
                     -- Go to definition in split window: Split window, move to left and open definition
-                    vim.keymap.set('n', 'gD', '<cmd>vsplit | wincmd L | lua vim.lsp.buf.declaration()<cr>',
-                        { noremap = true, silent = true, desc = "Go to definition in split window" })
-                    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>',
-                        { buffer = event.buf, desc = "Go to implementation" })
-                    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>',
-                        { buffer = event.buf, desc = "Go to type definition" })
-                    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>',
-                        { buffer = event.buf, desc = "Show references" })
-                    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>',
-                        { buffer = event.buf, desc = "Show signature help" })
-                    vim.keymap.set('n', 'gR', '<cmd>lua vim.lsp.buf.rename()<cr>',
-                        { buffer = event.buf, desc = "Rename" })
-                    vim.keymap.set({ 'n', 'x' }, 'f', '<cmd>lua vim.lsp.buf.format({async = true})<cr>',
-                        { buffer = event.buf, desc = "Format selection" })
-                    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>',
-                        { buffer = event.buf, desc = "Code action" })
+                    map('n', 'gD', '<cmd>vsplit | wincmd L | lua vim.lsp.buf.declaration()<cr>',
+                        "Go to definition in split window")
+                    map('n', 'gi', vim.lsp.buf.implementation, "Go to implementation")
+                    map('n', 'go', vim.lsp.buf.type_definition, "Go to type definition")
+                    map('n', 'gr', vim.lsp.buf.references, "Show references")
+                    map('n', 'gs', vim.lsp.buf.signature_help, "Show signature help")
+                    map('n', 'gR', vim.lsp.buf.rename, "Rename")
+                    map({ 'n', 'x' }, 'f', function() vim.lsp.buf.format({ async = true }) end, "Format selection")
+                    map('n', '<F4>', vim.lsp.buf.code_action, "Code action")
                 end
             })
 
-            vim.lsp.config('eslint', {
-                capabilities = capabilities,
-                settings = {
-                    eslint = {
-                        enable = true,
-                        packageManager = "yarn",
-                        configFiles = ".eslint.config.mjs",
-                        validate = "on"
-                    }
-                }
-            })
-
-            require('mason').setup()
-
-            require('mason-lspconfig').setup({
-                ensure_installed = { "eslint", "clangd" },
-                handlers = { -- this first function is the "default handler"
-                    -- it applies to every language server without a "custom handler"
-                    function(server_name)
-                        vim.lsp.config(server_name, {
-                            capabilities = capabilities
-                        })
-                        vim.lsp.enable(server_name)
-                    end,
-
-                    lua_ls = function()
-                        vim.lsp.config('lua_ls', {
-                            capabilities = capabilities,
-                            settings = {
-                                Lua = {
-                                    diagnostics = {
-                                        globals = { 'vim' },
-                                    },
-                                },
-                            },
-                        })
-                        vim.lsp.enable('lua_ls')
-                    end,
-                }
-            })
-
-            vim.lsp.config('sourcekit', {
-                capabilities = capabilities,
-                cmd = {
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp",
-                },
-                root_dir = function(bufnr)
-                    local filename = vim.api.nvim_buf_get_name(bufnr)
-                    local util = require("lspconfig.util")
-                    return util.root_pattern("buildServer.json")(filename)
-                        or util.root_pattern("*.xcodeproj", "*.xcworkspace")(filename)
-                        or util.find_git_ancestor(filename)
-                        or util.root_pattern("Package.swift")(filename)
+            -- Prevent autoformatting of comments in C and Cpp code
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = { "c", "cpp" },
+                callback = function()
+                    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
                 end,
             })
-            vim.lsp.enable('sourcekit')
         end
     } }
