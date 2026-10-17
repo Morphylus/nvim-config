@@ -87,6 +87,18 @@ return {
                 },
             })
 
+            -- Pyright fork that also ships docstrings for builtins (len, int, ...)
+            -- "standard" keeps pyright's level of checking instead of the stricter default
+            vim.lsp.config('basedpyright', {
+                settings = {
+                    basedpyright = {
+                        analysis = {
+                            typeCheckingMode = "standard",
+                        },
+                    },
+                },
+            })
+
             -- Swift only, C/C++ is handled by clangd
             vim.lsp.config('sourcekit', {
                 filetypes = { 'swift' },
@@ -100,7 +112,7 @@ return {
 
             -- Enables every server installed through mason
             require('mason-lspconfig').setup({
-                ensure_installed = { "eslint", "clangd" },
+                ensure_installed = { "eslint", "clangd", "basedpyright" },
             })
 
             -- Define the autoformat function locally

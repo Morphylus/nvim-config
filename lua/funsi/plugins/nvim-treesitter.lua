@@ -6,7 +6,7 @@ return {
     config = function()
         require("nvim-treesitter").install({
             "lua", "gdscript", "godot_resource", "gdshader", "vim", "javascript", "html", "rust", "typescript", "glsl",
-            "wgsl", "bash", "c", "cpp", "cmake", "markdown", "markdown_inline",
+            "wgsl", "bash", "c", "cpp", "cmake", "markdown", "markdown_inline", "python", "swift",
         })
 
         -- Highlighting and indentation for every filetype that has a parser

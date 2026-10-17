@@ -37,4 +37,4 @@ vim.opt.updatetime = 50
 
 vim.opt.colorcolumn = "80"
 
-vim.cmd("colorscheme catppuccin-macchiato")
+vim.cmd("colorscheme dracula")
